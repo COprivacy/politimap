@@ -752,3 +752,114 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
+
+// ============================================================
+// PROGRESSIVE WEB APP (PWA) – NATIVO & GENTIL
+// ============================================================
+let deferredInstallPrompt = null;
+const PWA_DISMISSED_KEY = 'politimap_pwa_dismissed_until';
+
+// 1. Registro do Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('./sw.js')
+      .then(reg => {
+        console.log('PolitiMap Service Worker registrado com sucesso:', reg.scope);
+      })
+      .catch(err => {
+        console.warn('Falha ao registrar Service Worker:', err);
+      });
+  });
+}
+
+// 2. Captura do Evento Nativo de Instalação (beforeinstallprompt)
+window.addEventListener('beforeinstallprompt', e => {
+  // Impede o prompt bruto padrão do navegador
+  e.preventDefault();
+  deferredInstallPrompt = e;
+
+  // Torna visível o botão "Instalar App" na Navbar
+  const navInstallBtn = document.getElementById('btn-pwa-install');
+  if (navInstallBtn) {
+    navInstallBtn.style.display = 'inline-flex';
+  }
+
+  // Verifica se o usuário dispensou o banner recentemente (últimos 7 dias)
+  const dismissedUntil = localStorage.getItem(PWA_DISMISSED_KEY);
+  const now = Date.now();
+  if (dismissedUntil && now < parseInt(dismissedUntil, 10)) {
+    return; // Não incomoda o usuário
+  }
+
+  // Exibe a notificação gentil com atraso amigável de 3.5 segundos
+  setTimeout(() => {
+    showPwaGentleBanner();
+  }, 3500);
+});
+
+// 3. Exibir o Banner Gentil
+function showPwaGentleBanner() {
+  // Se já estiver rodando como app instalado (standalone), não mostra nada
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+    return;
+  }
+
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) {
+    banner.classList.add('show');
+  }
+}
+
+// 4. Dispensar o Banner Gentil
+function dismissPwaBanner(rememberChoice = true) {
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) {
+    banner.classList.remove('show');
+  }
+
+  if (rememberChoice) {
+    // Guarda lembrete para 5 dias sem incomodar
+    const fiveDaysFromNow = Date.now() + (5 * 24 * 60 * 60 * 1000);
+    localStorage.setItem(PWA_DISMISSED_KEY, fiveDaysFromNow.toString());
+  }
+}
+
+// 5. Ação de Instalação Nativa
+async function triggerPwaInstall() {
+  dismissPwaBanner(false);
+
+  // Se o navegador disparou o evento nativo
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      displayToast('Obrigado por instalar o PolitiMap!');
+    }
+    deferredInstallPrompt = null;
+    
+    const navInstallBtn = document.getElementById('btn-pwa-install');
+    if (navInstallBtn) navInstallBtn.style.display = 'none';
+    return;
+  }
+
+  // Detecção especial para iOS Safari (iPhone / iPad)
+  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (isIos) {
+    displayToast('Para instalar no iOS: toque no botão Compartilhar e selecione "Adicionar à Tela de Início"');
+    return;
+  }
+
+  // Se já estiver instalado ou navegador de desktop sem prompt direto
+  displayToast('Para instalar: clique no ícone de instalação (computador/seta) na barra de endereços do seu navegador.');
+}
+
+// 6. Confirmação quando o app for instalado
+window.addEventListener('appinstalled', () => {
+  displayToast('PolitiMap instalado com sucesso!');
+  const navInstallBtn = document.getElementById('btn-pwa-install');
+  if (navInstallBtn) navInstallBtn.style.display = 'none';
+  dismissPwaBanner(false);
+  deferredInstallPrompt = null;
+});
