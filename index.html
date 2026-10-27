@@ -96,8 +96,10 @@
 
     <!-- Ações Desktop / Mobile -->
     <div class="nav-actions">
-      <button class="nav-btn-install" id="btn-pwa-install" onclick="triggerPwaInstall()" style="display: none;" title="Instalar aplicativo">
-        <i class="fa-solid fa-download"></i> <span>Instalar App</span>
+      <button class="nav-btn-install" id="btn-pwa-install" onclick="triggerPwaInstall()" style="display: none;" title="Instalar aplicativo no seu dispositivo">
+        <span class="install-pulse-dot"></span>
+        <i class="fa-solid fa-arrow-down-to-line"></i>
+        <span>Instalar App</span>
       </button>
       <button class="nav-btn-icon" id="btn-locate" onclick="triggerGeolocation()" title="Localizar meu dispositivo via GPS">
         <i class="fa-solid fa-location-crosshairs"></i>
@@ -347,27 +349,33 @@
     </div>
   </div>
 
-  <!-- ─── NOTIFICAÇÃO GENTIL DE INSTALAÇÃO PWA ─── -->
+  <!-- ─── NOTIFICAÇÃO GENTIL DE INSTALAÇÃO PWA (MODERNA / GLASSMORPHISM) ─── -->
   <div class="pwa-install-banner" id="pwa-install-banner">
-    <div class="pwa-banner-header">
-      <div class="pwa-banner-icon">
-        <i class="fa-solid fa-mobile-screen-button"></i>
+    <div class="pwa-card-top">
+      <div class="pwa-app-squircle">
+        <div class="squircle-glow"></div>
+        <i class="fa-solid fa-map-location-dot"></i>
       </div>
-      <div class="pwa-banner-title-wrap">
-        <h4>Adicionar à Tela de Início?</h4>
-        <span class="pwa-banner-sub">Navegação rápida e tela cheia com GPS</span>
+      <div class="pwa-card-heading">
+        <div class="pwa-badge-row">
+          <span class="pwa-native-pill">App Nativo</span>
+          <span class="pwa-size-tag">Sem downloads pesados</span>
+        </div>
+        <h4>PolitiMap</h4>
       </div>
-      <button class="pwa-btn-dismiss-x" onclick="dismissPwaBanner(true)" title="Dispensar">
+      <button class="pwa-close-circle" onclick="dismissPwaBanner(true)" title="Fechar">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
+
     <p class="pwa-banner-text">
-      Deseja instalar o PolitiMap no seu dispositivo? Você terá acesso instantâneo ao mapa sem precisar abrir o navegador, com carregamento rápido e sem ocupar a memória do aparelho.
+      Adicione à tela de início para navegação fluida em tela cheia e GPS direto.
     </p>
-    <div class="pwa-banner-actions">
-      <button class="pwa-btn-later" onclick="dismissPwaBanner(true)">Mais tarde</button>
-      <button class="pwa-btn-install" onclick="triggerPwaInstall()">
-        <i class="fa-solid fa-download"></i> Instalar Aplicativo
+
+    <div class="pwa-card-buttons">
+      <button class="pwa-btn-dismiss" onclick="dismissPwaBanner(true)">Agora não</button>
+      <button class="pwa-btn-confirm" onclick="triggerPwaInstall()">
+        <i class="fa-solid fa-download"></i> Instalar
       </button>
     </div>
   </div>
