@@ -15,30 +15,31 @@ let currentTileIndex = 0;
 let currentTileLayer = null;
 let currentReferenceLayer = null;
 
-// Configuração de Camadas Estilo Tesla Navigation (Alta Performance, Sem API Keys)
+// Configuração de Camadas Estilo Tesla Navigation (100% Livres de API Key e Marcas d'água)
 const MAP_TILE_CONFIGS = [
   {
     name: 'tesla',
     label: 'Tesla Cyber Stealth (Padrão)',
-    base: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    reference: null,
-    options: {
-      maxNativeZoom: 19,
-      maxZoom: 19,
-      subdomains: ['a', 'b', 'c', 'd'],
-      attribution: '&copy; Tesla Navigation Cyber Style &mdash; OpenStreetMap & CartoDB',
-    },
-  },
-  {
-    name: 'dark',
-    label: 'Esri Dark Gray Canvas',
     base: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
     reference: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
     options: {
       maxNativeZoom: 16,
       maxZoom: 19,
-      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+      attribution: '&copy; Tesla Navigation Stealth Style &mdash; Esri Canvas',
     },
+    className: 'tesla-cyber-tiles',
+  },
+  {
+    name: 'streets',
+    label: 'Ruas Detalhadas Esri',
+    base: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    reference: null,
+    options: {
+      maxNativeZoom: 18,
+      maxZoom: 19,
+      attribution: 'Tiles &copy; Esri &mdash; Fontes Cartográficas Mundiais',
+    },
+    className: '',
   },
   {
     name: 'satellite',
@@ -50,6 +51,7 @@ const MAP_TILE_CONFIGS = [
       maxZoom: 19,
       attribution: 'Tiles &copy; Esri &mdash; Imagens Satélite Gratuitas',
     },
+    className: '',
   },
 ];
 
@@ -114,6 +116,16 @@ function applyTileLayer(index) {
 
   currentTileIndex = index % MAP_TILE_CONFIGS.length;
   const config = MAP_TILE_CONFIGS[currentTileIndex];
+  const container = document.getElementById('map-viewport');
+
+  // Alterna classe de visualização Tesla
+  if (container) {
+    if (config.className) {
+      container.classList.add(config.className);
+    } else {
+      container.classList.remove('tesla-cyber-tiles');
+    }
+  }
 
   currentTileLayer = L.tileLayer(config.base, config.options).addTo(mainMap);
 

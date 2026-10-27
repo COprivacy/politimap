@@ -438,6 +438,9 @@ html, body {
 .leaflet-tile {
   filter: brightness(0.92) contrast(1.05);
 }
+.tesla-cyber-tiles .leaflet-tile {
+  filter: brightness(0.68) contrast(1.4) saturate(0.2) hue-rotate(195deg);
+}
 .leaflet-container {
   background: #070B12 !important;
   font-family: var(--font-sans) !important;
