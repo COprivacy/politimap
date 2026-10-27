@@ -443,41 +443,199 @@ html, body {
   font-family: var(--font-sans) !important;
 }
 
-/* Marcadores Personalizados do Mapa */
-.custom-map-pin {
-  width: 38px;
-  height: 38px;
+/* ─── WIDGET BÚSSOLA TESLA HUD ─── */
+.tesla-hud-compass {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  z-index: 450;
+  background: rgba(11, 17, 32, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-full);
+  padding: 6px 14px 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+}
+.tesla-hud-compass:hover {
+  background: rgba(15, 23, 42, 0.95);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+.tesla-compass-ring {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: #070B12;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-  border: 2px solid;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
 }
-.custom-map-pin:hover {
-  transform: scale(1.18);
+.tesla-north-pointer {
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #E82127; /* Vermelho Tesla Oficial */
+  letter-spacing: -0.05em;
+  transform: translateY(-1px);
+}
+.tesla-hud-meta {
+  display: flex;
+  flex-direction: column;
+}
+.tesla-hud-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--text-title);
+  line-height: 1.1;
+}
+.tesla-hud-state {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #38BDF8; /* Ciano Tesla */
+  letter-spacing: 0.08em;
+}
+
+/* ─── WAYPOINTS ESTILO TESLA NAVIGATION HUD ─── */
+.tesla-waypoint-pin {
+  position: relative;
+  width: 36px;
+  height: 46px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.tesla-waypoint-pin:hover {
+  transform: scale(1.22) translateY(-4px);
   z-index: 1000 !important;
 }
-.custom-map-pin.direita {
-  background: #0E1A14;
+
+.tesla-pin-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: 2px solid;
+  opacity: 0.6;
+  animation: teslaRadarPulse 2.8s infinite ease-out;
+}
+@keyframes teslaRadarPulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  60% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.tesla-pin-core {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: #0B0F19;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75);
+  z-index: 2;
+  transition: var(--transition);
+}
+.tesla-pin-stem {
+  width: 3px;
+  height: 12px;
+  background: currentColor;
+  margin-top: -2px;
+  border-radius: 0 0 2px 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+/* Variações de Alinhamento Tesla */
+.tesla-waypoint-pin.direita {
+  color: var(--direita-gold);
+}
+.tesla-waypoint-pin.direita .tesla-pin-core {
   border-color: var(--direita-gold);
   color: var(--direita-gold);
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.45);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.5);
 }
-.custom-map-pin.esquerda {
-  background: #1C0A0A;
-  border-color: var(--esquerda-red);
-  color: var(--esquerda-red);
-  box-shadow: 0 0 14px rgba(239, 68, 68, 0.45);
+.tesla-waypoint-pin.direita .tesla-pin-ring {
+  border-color: var(--direita-gold);
 }
-.custom-map-pin.neutro {
-  background: #111827;
-  border-color: var(--centro-slate);
-  color: var(--text-body);
-  box-shadow: 0 0 10px rgba(100, 116, 139, 0.3);
+
+.tesla-waypoint-pin.esquerda {
+  color: #E82127; /* Tesla Red */
+}
+.tesla-waypoint-pin.esquerda .tesla-pin-core {
+  border-color: #E82127;
+  color: #E82127;
+  box-shadow: 0 0 16px rgba(232, 33, 39, 0.5);
+}
+.tesla-waypoint-pin.esquerda .tesla-pin-ring {
+  border-color: #E82127;
+}
+
+.tesla-waypoint-pin.neutro {
+  color: #94A3B8;
+}
+.tesla-waypoint-pin.neutro .tesla-pin-core {
+  border-color: #94A3B8;
+  color: #94A3B8;
+  box-shadow: 0 0 12px rgba(148, 163, 184, 0.35);
+}
+.tesla-waypoint-pin.neutro .tesla-pin-ring {
+  border-color: #94A3B8;
+}
+
+/* ─── CURSOR VEÍCULO TESLA AUTOPILOT GPS ─── */
+.tesla-user-beacon {
+  width: 44px;
+  height: 44px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tesla-radar-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  border: 2px solid #38BDF8;
+  animation: radarWave 2.2s infinite ease-out;
+}
+.tesla-radar-ring.delay {
+  animation-delay: 1.1s;
+}
+@keyframes radarWave {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  80% { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+.tesla-car-chevron {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: #0284C7;
+  border: 2px solid #FFFFFF;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.8), 0 4px 10px rgba(0, 0, 0, 0.6);
+  z-index: 3;
 }
 
 /* Popups Leaflet Customizados */

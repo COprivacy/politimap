@@ -15,28 +15,29 @@ let currentTileIndex = 0;
 let currentTileLayer = null;
 let currentReferenceLayer = null;
 
-// Configuração de Camadas Esri ArcGIS Livres (Sem Chave de API, Sem Bloqueio 403 e Sem Limite de Zoom)
+// Configuração de Camadas Estilo Tesla Navigation (Alta Performance, Sem API Keys)
 const MAP_TILE_CONFIGS = [
   {
+    name: 'tesla',
+    label: 'Tesla Cyber Stealth (Padrão)',
+    base: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    reference: null,
+    options: {
+      maxNativeZoom: 19,
+      maxZoom: 19,
+      subdomains: ['a', 'b', 'c', 'd'],
+      attribution: '&copy; Tesla Navigation Cyber Style &mdash; OpenStreetMap & CartoDB',
+    },
+  },
+  {
     name: 'dark',
-    label: 'Dark Gray Institucional',
+    label: 'Esri Dark Gray Canvas',
     base: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
     reference: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
     options: {
       maxNativeZoom: 16,
       maxZoom: 19,
       attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-    },
-  },
-  {
-    name: 'streets',
-    label: 'Ruas Detalhadas',
-    base: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-    reference: null,
-    options: {
-      maxNativeZoom: 18,
-      maxZoom: 19,
-      attribution: 'Tiles &copy; Esri &mdash; Fontes Cartográficas Mundiais',
     },
   },
   {
@@ -173,10 +174,10 @@ async function handleAddressSearch(event) {
   }
 }
 
-// ─── ÍCONES VETORIAIS DE MARCADORES (SEM EMOJIS) ─────────────
+// ─── ÍCONES HUD ESTILO TESLA NAVIGATION (SEM EMOJIS) ─────────
 function createCustomPin(lean) {
   let iconHtml = '';
-  let pinClass = 'custom-map-pin ' + lean;
+  let pinClass = 'tesla-waypoint-pin ' + lean;
 
   if (lean === 'direita') {
     iconHtml = '<i class="fa-solid fa-arrow-trend-up"></i>';
@@ -187,11 +188,17 @@ function createCustomPin(lean) {
   }
 
   return L.divIcon({
-    html: `<div class="${pinClass}">${iconHtml}</div>`,
+    html: `
+      <div class="${pinClass}">
+        <div class="tesla-pin-ring"></div>
+        <div class="tesla-pin-core">${iconHtml}</div>
+        <div class="tesla-pin-stem"></div>
+      </div>
+    `,
     className: '',
-    iconSize: [38, 38],
-    iconAnchor: [19, 19],
-    popupAnchor: [0, -22],
+    iconSize: [36, 46],
+    iconAnchor: [18, 46],
+    popupAnchor: [0, -46],
   });
 }
 
@@ -573,13 +580,30 @@ function applyUserPosition(lat, lng, sourceLabel) {
 
   if (currentUserMarker) mainMap.removeLayer(currentUserMarker);
 
-  currentUserMarker = L.circleMarker([lat, lng], {
-    radius: 9,
-    fillColor: '#3B82F6',
-    color: '#FFFFFF',
-    weight: 2,
-    fillOpacity: 1,
-  }).addTo(mainMap).bindPopup(`<b>Sua Localização</b><br><small>${sourceLabel}</small>`).openPopup();
+  const teslaCursorIcon = L.divIcon({
+    html: `
+      <div class="tesla-user-beacon">
+        <div class="tesla-radar-ring"></div>
+        <div class="tesla-radar-ring delay"></div>
+        <div class="tesla-car-chevron">
+          <i class="fa-solid fa-location-arrow"></i>
+        </div>
+      </div>
+    `,
+    className: '',
+    iconSize: [44, 44],
+    iconAnchor: [22, 22],
+    popupAnchor: [0, -22],
+  });
+
+  currentUserMarker = L.marker([lat, lng], { icon: teslaCursorIcon })
+    .addTo(mainMap)
+    .bindPopup(`
+      <div style="text-align:center;padding:4px;">
+        <span style="font-size:0.68rem;font-weight:800;color:#38BDF8;text-transform:uppercase;letter-spacing:0.08em;">TESLA GPS • LOCALIZAÇÃO ATIVA</span>
+        <div style="font-size:0.86rem;font-weight:700;color:#F8FAFC;margin-top:2px;">${escapeHtml(sourceLabel)}</div>
+      </div>
+    `).openPopup();
 
   displayToast(`Localização definida: ${sourceLabel}`);
 }

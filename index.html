@@ -116,6 +116,17 @@
     <!-- MAPA INTERATIVO -->
     <div id="map-viewport"></div>
 
+    <!-- WIDGET TESLA HUD (BÚSSOLA & STATUS) -->
+    <div class="tesla-hud-compass" onclick="resetView()" title="Orientação Norte / Tesla Cyber Navigation">
+      <div class="tesla-compass-ring">
+        <span class="tesla-north-pointer">N</span>
+      </div>
+      <div class="tesla-hud-meta">
+        <span class="tesla-hud-label">TESLA NAV</span>
+        <span class="tesla-hud-state">STEALTH MODE</span>
+      </div>
+    </div>
+
     <!-- CONTROLES FLUTUANTES NO MAPA -->
     <div class="map-floating-controls">
       <button class="floating-btn" id="btn-toggle-tiles" onclick="toggleMapStyle()" title="Alternar visualização do mapa (Escuro / Satélite / Ruas)">
