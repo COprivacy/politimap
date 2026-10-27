@@ -7,6 +7,10 @@
    ============================================================ */
 
 :root {
+  /* Dimensões do Layout & Header */
+  --top-nav-height:     64px;
+  --category-bar-height: 44px;
+
   /* Orientação Política */
   --direita-gold:       #F59E0B;
   --direita-gold-sub:   #D97706;
@@ -226,21 +230,21 @@ html, body {
 
 /* ─── NAVBAR SUPERIOR ─── */
 .top-nav {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;
-  z-index: 500;
-  background: rgba(15, 23, 42, 0.88);
+  height: var(--top-nav-height);
+  z-index: 600;
+  background: rgba(15, 23, 42, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  gap: 16px;
+  padding: 0 16px;
+  gap: 12px;
 }
 
 .nav-brand {
@@ -418,11 +422,12 @@ html, body {
 /* ─── APP LAYOUT ─── */
 .app-container {
   position: absolute;
-  top: 64px;
+  top: calc(var(--top-nav-height) + var(--category-bar-height));
   bottom: 0;
   left: 0;
   right: 0;
   display: flex;
+  overflow: hidden;
 }
 
 /* ─── MAPA ─── */
@@ -449,7 +454,7 @@ html, body {
 /* ─── WIDGET BÚSSOLA TESLA HUD ─── */
 .tesla-hud-compass {
   position: absolute;
-  top: 18px;
+  top: 14px;
   left: 20px;
   z-index: 450;
   background: rgba(11, 17, 32, 0.78);
@@ -1385,19 +1390,21 @@ html, body {
 /* ─── BARRA DE FILTRO POR CATEGORIA ─── */
 .category-filter-bar {
   position: fixed;
-  top: 62px; /* logo abaixo do header */
+  top: var(--top-nav-height);
   left: 0;
   right: 0;
-  z-index: 900;
+  height: var(--category-bar-height);
+  z-index: 550;
   display: flex;
+  align-items: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 0 14px;
   overflow-x: auto;
   overflow-y: hidden;
-  background: rgba(11, 17, 33, 0.92);
+  background: rgba(11, 17, 33, 0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-snap-type: x mandatory;
@@ -1436,11 +1443,6 @@ html, body {
   border-color: var(--direita-gold, #F7C948);
   color: var(--direita-gold, #F7C948);
   box-shadow: 0 0 10px rgba(247,201,72,0.15);
-}
-
-/* Empurra o conteúdo principal para baixo da barra de categorias */
-.app-container {
-  padding-top: calc(62px + 44px) !important; /* header + category bar */
 }
 
 /* ─── BOTTOM NAV MOBILE (TELAS MENORES) ─── */
@@ -1488,6 +1490,11 @@ html, body {
 
 /* ─── RESPONSIVIDADE MOBILE FIRST ─── */
 @media (max-width: 860px) {
+  :root {
+    --top-nav-height: 52px;
+    --category-bar-height: 42px;
+  }
+
   .nav-filters-desktop {
     display: none;
   }
@@ -1495,11 +1502,134 @@ html, body {
     display: flex;
   }
   .app-container {
+    top: calc(var(--top-nav-height) + var(--category-bar-height));
     bottom: 60px;
     flex-direction: column;
   }
   .drawer-pull-handle {
     display: flex;
+  }
+
+  /* Top Navigation no Mobile */
+  .top-nav {
+    height: var(--top-nav-height);
+    padding: 0 10px;
+    gap: 8px;
+  }
+  .nav-brand {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .nav-brand-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+  }
+  .nav-brand-title {
+    font-size: 0.94rem;
+    letter-spacing: -0.01em;
+  }
+
+  /* Barra de Pesquisa fluida no Mobile (ocupa todo o espaço livre) */
+  .nav-search-bar {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    height: 32px;
+    padding: 0 8px 0 10px;
+    gap: 6px;
+  }
+  .nav-search-bar input {
+    font-size: 0.75rem;
+  }
+  .nav-search-bar input::placeholder {
+    font-size: 0.72rem;
+  }
+  .search-icon {
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+  .search-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+  }
+
+  /* Ações do Topo no Mobile */
+  .nav-actions {
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .nav-btn-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  /* Oculta GPS duplicado no topo (já existe botão flutuante nativo no mapa) */
+  #btn-locate {
+    display: none !important;
+  }
+
+  /* Botão "Novo Cadastro" compacto no topo do mobile */
+  .nav-btn-action {
+    padding: 5px 9px;
+    font-size: 0.74rem;
+    height: 32px;
+    gap: 4px;
+  }
+  .nav-btn-action .btn-text-full {
+    display: none;
+  }
+  .nav-btn-action .btn-text-mobile {
+    display: inline;
+  }
+
+  /* Botão de instalação compacto caso apareça no topo */
+  .nav-btn-install {
+    padding: 5px 8px !important;
+    height: 32px;
+    gap: 5px;
+  }
+  .nav-btn-install span:not(.install-pulse-dot) {
+    display: none;
+  }
+
+  /* Chips de Categoria no Mobile */
+  .category-filter-bar {
+    height: var(--category-bar-height);
+    padding: 0 8px;
+    gap: 5px;
+  }
+  .cat-chip {
+    padding: 4px 10px;
+    font-size: 0.68rem;
+    gap: 4px;
+  }
+  .cat-chip i {
+    font-size: 0.65rem;
+  }
+
+  /* Tesla HUD Compass perfeitamente abaixo dos chips no mobile */
+  .tesla-hud-compass {
+    top: 10px;
+    left: 10px;
+    padding: 4px 8px 4px 5px;
+    gap: 6px;
+  }
+  .tesla-compass-ring {
+    width: 22px;
+    height: 22px;
+  }
+  .tesla-north-pointer {
+    font-size: 0.6rem;
+  }
+  .tesla-hud-label {
+    font-size: 0.54rem;
+  }
+  .tesla-hud-state {
+    font-size: 0.46rem;
   }
 
   /* Painel se transforma em Bottom Sheet Deslizante */

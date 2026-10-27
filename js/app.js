@@ -818,7 +818,7 @@ let deferredInstallPrompt = null;
 const PWA_DISMISSED_KEY = 'politimap_pwa_dismissed_until';
 
 // 1. Registro do Service Worker + Forçamento de Atualização Imediata
-const APP_VERSION = 'v5';
+const APP_VERSION = 'v6';
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {

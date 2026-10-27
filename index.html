@@ -30,7 +30,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
   <!-- Estilos Customizados -->
-  <link rel="stylesheet" href="css/style.css?v=5" />
+  <link rel="stylesheet" href="css/style.css?v=6" />
 </head>
 <body>
 
@@ -75,8 +75,8 @@
     <!-- Barra de Busca Rápida de Endereço / Bairro -->
     <div class="nav-search-bar">
       <i class="fa-solid fa-magnifying-glass search-icon"></i>
-      <input type="text" id="search-input" placeholder="Buscar bairro, rua ou cidade..." onkeydown="handleAddressSearch(event)" />
-      <button class="search-btn" type="button" onclick="handleAddressSearch()">
+      <input type="text" id="search-input" placeholder="Buscar endereço..." onkeydown="handleAddressSearch(event)" />
+      <button class="search-btn" type="button" onclick="handleAddressSearch()" title="Pesquisar endereço">
         <i class="fa-solid fa-arrow-right"></i>
       </button>
     </div>
@@ -110,8 +110,10 @@
       <button class="nav-btn-icon" id="btn-locate" onclick="triggerGeolocation()" title="Localizar meu dispositivo via GPS">
         <i class="fa-solid fa-location-crosshairs"></i>
       </button>
-      <button class="nav-btn-action" onclick="openCreateModal()">
-        <i class="fa-solid fa-plus"></i> Novo Cadastro
+      <button class="nav-btn-action" onclick="openCreateModal()" title="Cadastrar novo estabelecimento">
+        <i class="fa-solid fa-plus"></i>
+        <span class="btn-text-full">Novo Cadastro</span>
+        <span class="btn-text-mobile" style="display: none;">Novo</span>
       </button>
     </div>
   </header>
@@ -465,7 +467,7 @@
   <div class="app-toast" id="app-toast"></div>
 
   <!-- SCRIPTS -->
-  <script src="js/data.js?v=5"></script>
-  <script src="js/app.js?v=5"></script>
+  <script src="js/data.js?v=6"></script>
+  <script src="js/app.js?v=6"></script>
 </body>
 </html>
