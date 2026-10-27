@@ -1317,30 +1317,34 @@ html, body {
   .form-grid-two {
     grid-template-columns: 1fr;
   }
-/* ─── BOTÃO DE INSTALAÇÃO PWA NA NAVBAR (ESTILO PILL MODERNO) ─── */
+}
+
+/* ─── BOTÃO DE INSTALAÇÃO PWA NA NAVBAR (ESTILO PILL MODERNO APPLE/LINEAR) ─── */
 .nav-btn-install {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--text-title);
-  border-radius: var(--radius-full);
-  padding: 7px 16px;
-  font-size: 0.82rem;
-  font-weight: 600;
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: var(--text-title) !important;
+  border-radius: var(--radius-full) !important;
+  padding: 8px 16px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
   cursor: pointer;
   transition: var(--transition);
   white-space: nowrap;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 .nav-btn-install:hover {
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.4);
-  color: var(--direita-gold);
+  background: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.45) !important;
+  color: var(--direita-gold) !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.2);
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 .install-pulse-dot {
   width: 7px;
