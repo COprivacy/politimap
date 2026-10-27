@@ -795,19 +795,104 @@ function escapeHtml(text) {
 let deferredInstallPrompt = null;
 const PWA_DISMISSED_KEY = 'politimap_pwa_dismissed_until';
 
-// 1. Registro do Service Worker
+// 1. Registro do Service Worker + Detecção de Atualização
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('./sw.js')
       .then(reg => {
-        console.log('PolitiMap Service Worker registrado com sucesso:', reg.scope);
+        console.log('PolitiMap SW registrado:', reg.scope);
+
+        // Detecta novo SW sendo instalado em segundo plano
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+
+          newWorker.addEventListener('statechange', () => {
+            // Quando o novo SW terminou de instalar e está esperando
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // Envia sinal para o SW ativar imediatamente (skipWaiting)
+              newWorker.postMessage({ type: 'SKIP_WAITING' });
+            }
+          });
+        });
       })
       .catch(err => {
         console.warn('Falha ao registrar Service Worker:', err);
       });
+
+    // Quando o SW ativo muda (novo SW tomou controle), recarrega
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+
+    // Recebe mensagem do SW sobre atualização disponível
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data && event.data.type === 'SW_UPDATED') {
+        showUpdateToast(event.data.message || 'Nova versão disponível!');
+      }
+    });
   });
 }
+
+// Toast especial de atualização com botão de recarregar
+function showUpdateToast(msg) {
+  // Remove toast anterior se existir
+  const old = document.getElementById('update-toast');
+  if (old) old.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'update-toast';
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 88px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid var(--accent-gold, #F7C948);
+    border-radius: 14px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 99999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    max-width: 340px;
+    width: calc(100% - 32px);
+    animation: slideUp 0.35s ease;
+  `;
+
+  toast.innerHTML = `
+    <i class="fa-solid fa-rotate" style="color:#F7C948;font-size:1.2rem;flex-shrink:0;"></i>
+    <div style="flex:1;">
+      <div style="color:#f1f5f9;font-size:0.82rem;font-weight:600;line-height:1.3;">Atualização disponível</div>
+      <div style="color:#94a3b8;font-size:0.73rem;margin-top:2px;">${msg}</div>
+    </div>
+    <button onclick="window.location.reload()" style="
+      background: linear-gradient(135deg, #F7C948, #e6b800);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    ">Atualizar</button>
+  `;
+
+  document.body.appendChild(toast);
+
+  // Auto-remove após 20 segundos
+  setTimeout(() => {
+    if (toast.parentNode) toast.remove();
+  }, 20000);
+}
+
 
 // 2. Captura do Evento Nativo de Instalação (beforeinstallprompt)
 window.addEventListener('beforeinstallprompt', e => {

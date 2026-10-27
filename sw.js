@@ -1,9 +1,12 @@
 // ============================================================
 // PolitiMap – Service Worker Nativo PWA
-// Cache Inteligente e Suporte Offline
+// v3 – Atualização: +18 lojas HAVAN + empresas de direita
 // ============================================================
 
-const CACHE_NAME = 'politimap-pwa-v1';
+// ⚠️ IMPORTANTE: Sempre que atualizar arquivos locais, incremente
+// CACHE_VERSION para forçar atualização em todos os clientes PWA.
+const CACHE_VERSION = 'v3';
+const CACHE_NAME = `politimap-pwa-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
   './',
@@ -16,36 +19,62 @@ const STATIC_ASSETS = [
   './icons/icon-512.png'
 ];
 
-// Instalação do Service Worker & Cache de Recursos Estáticos
+// ─── INSTALAÇÃO: Baixa todos os assets da nova versão ────────
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(STATIC_ASSETS);
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(STATIC_ASSETS))
+      .then(() => {
+        // Força ativação imediata — não espera fechar abas antigas
+        return self.skipWaiting();
+      })
   );
 });
 
-// Ativação e limpeza de versões antigas do cache
+// ─── ATIVAÇÃO: Remove caches de versões anteriores ───────────
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames
-          .filter(name => name !== CACHE_NAME)
-          .map(name => caches.delete(name))
+          .filter(name => name.startsWith('politimap-pwa-') && name !== CACHE_NAME)
+          .map(name => {
+            console.log(`[SW] Removendo cache antigo: ${name}`);
+            return caches.delete(name);
+          })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => {
+      console.log(`[SW] Ativo na versão ${CACHE_VERSION}`);
+      return self.clients.claim();
+    }).then(() => {
+      // Notifica todas as abas/PWAs abertas para recarregar
+      return self.clients.matchAll({ type: 'window' }).then(clients => {
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'SW_UPDATED',
+            version: CACHE_VERSION,
+            message: 'Nova versão disponível com +18 lojas HAVAN e empresas de direita.'
+          });
+        });
+      });
+    })
   );
 });
 
-// Estratégia: Network First com fallback para Cache
+// ─── MENSAGENS: Permite forçar atualização manual ────────────
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// ─── FETCH: Network First com fallback para Cache ────────────
 self.addEventListener('fetch', event => {
-  // Ignora requisições de outras origens não-GET ou extensões
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // Se for tile de mapa ou API externa, tenta rede direto com fallback para offline
+  // Recursos externos (tiles de mapa, CDN): rede direta sem cache SW
   if (url.origin !== location.origin) {
     event.respondWith(
       fetch(event.request).catch(() => caches.match(event.request))
@@ -53,7 +82,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Recursos locais: busca da rede primeiro, atualiza cache e fallback para cache
+  // Recursos locais: rede primeiro → atualiza cache → fallback para cache
   event.respondWith(
     fetch(event.request)
       .then(response => {
@@ -69,7 +98,6 @@ self.addEventListener('fetch', event => {
       .catch(() => {
         return caches.match(event.request).then(cachedResponse => {
           if (cachedResponse) return cachedResponse;
-          // Se for navegação de página, retorna index.html
           if (event.request.mode === 'navigate') {
             return caches.match('./index.html');
           }

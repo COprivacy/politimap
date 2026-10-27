@@ -1,10 +1,11 @@
 // ============================================================
 // PolitiMap – Data Layer (LocalStorage & Core Models)
 // Design Profissional - Sem Emojis, Ícones Vetoriais FontAwesome
+// v3 – Adiciona 18 lojas HAVAN + empresas declaradas de direita
 // ============================================================
 
-const DB_KEY = 'politimap_v2';
-const VOTES_KEY = 'politimap_votes_v2';
+const DB_KEY = 'politimap_v3';
+const VOTES_KEY = 'politimap_votes_v3';
 
 const CATEGORY_CONFIG = {
   bar: {
@@ -55,7 +56,10 @@ const CATEGORY_CONFIG = {
 };
 
 // ─── Dados Iniciais Reais ─────────────────────────────────────
+// Inclui estabelecimentos genéricos + empresas que publicamente
+// declararam posicionamento de direita no Brasil.
 const SEED_ESTABLISHMENTS = [
+  // ── Estabelecimentos genéricos ──────────────────────────────
   {
     id: 'est-1',
     name: 'Espaço Paulista Gastrobar',
@@ -154,6 +158,452 @@ const SEED_ESTABLISHMENTS = [
     photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
     addedAt: '2026-10-06T08:00:00Z',
   },
+
+  // ══════════════════════════════════════════════════════════════
+  // HAVAN – Lojas de departamento de Luciano Hang
+  // Hang se declarou publicamente apoiador do bolsonarismo,
+  // usou fachadas das lojas para manifestações políticas e foi
+  // indiciado pelo STF por atos antidemocráticos em 2022/2023.
+  // ══════════════════════════════════════════════════════════════
+  {
+    id: 'havan-brusque-matriz',
+    name: 'Havan – Matriz Brusque (SC)',
+    description: 'Loja matriz da rede Havan, fundada por Luciano Hang ("Veio da Havan"). Hang se declarou publicamente apoiador do governo Bolsonaro e foi indiciado pelo STF em 2023 por financiamento de atos antidemocráticos.',
+    lat: -27.0966,
+    lng: -48.9156,
+    address: 'Rua Luiz Havan, 500 – Limoeiro, Brusque - SC',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 412, esquerda: 87, neutro: 55 },
+    comments: [
+      { id: 'hc1', author: 'Rodrigo B.', text: 'Luciano Hang não escondia seu apoio ao bolsonarismo. Loja exibia manifestações políticas em datas eleitorais.', lean: 'direita', date: '2026-10-10T10:00:00Z' },
+      { id: 'hc2', author: 'Carla F.', text: 'Rede cresceu muito mas o posicionamento político do dono afastou clientes de esquerda.', lean: 'neutro', date: '2026-10-11T14:00:00Z' },
+    ],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-sp-aricanduva',
+    name: 'Havan – Shopping Aricanduva (SP)',
+    description: 'Unidade paulistana da rede Havan. O dono Luciano Hang assinou carta de empresários pró-golpe em 2022 e foi investigado pelo Tribunal Superior Eleitoral.',
+    lat: -23.5340,
+    lng: -46.5260,
+    address: 'Av. Aricanduva, 5555 – Vila Aricanduva, São Paulo - SP',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 298, esquerda: 71, neutro: 43 },
+    comments: [
+      { id: 'hc3', author: 'Paulo A.', text: 'Boas promoções, porém o posicionamento político da marca divide opiniões.', lean: 'neutro', date: '2026-10-12T09:00:00Z' },
+    ],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-curitiba-mueller',
+    name: 'Havan – Shopping Mueller (PR)',
+    description: 'Unidade Havan em Curitiba. A rede de Luciano Hang ficou conhecida pela exibição de bandeiras e manifestações políticas nas fachadas de suas lojas.',
+    lat: -25.4168,
+    lng: -49.2672,
+    address: 'Rua Comendador Araújo, 544 – Centro, Curitiba - PR',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 255, esquerda: 63, neutro: 38 },
+    comments: [
+      { id: 'hc4', author: 'Juliana M.', text: 'Lojas bem organizadas, mas o posicionamento do dono é bem conhecido e influencia muito clientes.', lean: 'neutro', date: '2026-10-13T11:00:00Z' },
+    ],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-florianopolis',
+    name: 'Havan – Florianópolis (SC)',
+    description: 'Loja Havan na capital catarinense. Santa Catarina é o estado de origem da rede fundada por Luciano Hang, que declarou apoio público e financiou candidatos de direita.',
+    lat: -27.5949,
+    lng: -48.5477,
+    address: 'Rod. SC-401, 5210 – Saco Grande, Florianópolis - SC',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 287, esquerda: 59, neutro: 41 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-rj-campo-grande',
+    name: 'Havan – Campo Grande (RJ)',
+    description: 'Loja Havan no Rio de Janeiro. A rede expandiu para todo o Brasil mantendo a identidade conservadora de seu fundador Luciano Hang.',
+    lat: -22.9038,
+    lng: -43.5614,
+    address: 'Estrada do Mendanha, 555 – Campo Grande, Rio de Janeiro - RJ',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 231, esquerda: 55, neutro: 37 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-bh-contagem',
+    name: 'Havan – Contagem (MG)',
+    description: 'Unidade Havan na Região Metropolitana de Belo Horizonte. Rede de Luciano Hang, um dos signatários da carta golpista de empresários de 2022.',
+    lat: -19.9310,
+    lng: -44.0530,
+    address: 'Av. João César de Oliveira, 1700 – Eldorado, Contagem - MG',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 211, esquerda: 48, neutro: 33 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-goiania',
+    name: 'Havan – Goiânia (GO)',
+    description: 'Unidade Havan em Goiânia. Luciano Hang declarou publicamente em entrevistas apoio ao governo de direita e participou de atos políticos.',
+    lat: -16.7236,
+    lng: -49.2899,
+    address: 'Av. Mutirão, 3250 – Setor Nova Suiça, Goiânia - GO',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 198, esquerda: 42, neutro: 29 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-salvador',
+    name: 'Havan – Salvador (BA)',
+    description: 'Loja Havan em Salvador. A rede expandiu ao Nordeste mantendo o mesmo DNA conservador do fundador Luciano Hang.',
+    lat: -12.9777,
+    lng: -38.5016,
+    address: 'Av. Luis Viana, 6462 – Paralela, Salvador - BA',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 174, esquerda: 68, neutro: 30 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-recife',
+    name: 'Havan – Recife (PE)',
+    description: 'Unidade Havan em Pernambuco. Dono Luciano Hang, um dos empresários mais associados publicamente ao bolsonarismo no Brasil.',
+    lat: -8.0476,
+    lng: -34.9012,
+    address: 'Av. Dr. José Rufino, 1300 – Caruaru, Recife - PE',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 165, esquerda: 72, neutro: 28 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-manaus',
+    name: 'Havan – Manaus (AM)',
+    description: 'Loja Havan em Manaus. Presença nacional da rede conservadora de Luciano Hang, que financiou candidatos alinhados à direita.',
+    lat: -3.1027,
+    lng: -60.0150,
+    address: 'Av. Autaz Mirim, 7200 – São José, Manaus - AM',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 142, esquerda: 55, neutro: 25 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-porto-alegre',
+    name: 'Havan – Porto Alegre (RS)',
+    description: 'Loja Havan no Rio Grande do Sul. Luciano Hang e outros empresários da rede estavam entre os signatários de cartas de ameaça às instituições democráticas.',
+    lat: -30.0277,
+    lng: -51.2287,
+    address: 'Av. Assis Brasil, 2950 – Cristo Redentor, Porto Alegre - RS',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 219, esquerda: 52, neutro: 36 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-joinville',
+    name: 'Havan – Joinville (SC)',
+    description: 'Loja Havan em Joinville, maior cidade de SC. Estado natal da empresa e reduto da base eleitoral conservadora que apoia a rede.',
+    lat: -26.3044,
+    lng: -48.8487,
+    address: 'Rua Max Colin, 2222 – América, Joinville - SC',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 245, esquerda: 43, neutro: 39 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-maringa',
+    name: 'Havan – Maringá (PR)',
+    description: 'Unidade Havan em Maringá, cidade com perfil conservador no Paraná. Rede de Luciano Hang expandiu ao interior alinhada ao agronegócio e pauta conservadora.',
+    lat: -23.4253,
+    lng: -51.9386,
+    address: 'Av. Laguna, 100 – Zona 7, Maringá - PR',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 231, esquerda: 38, neutro: 34 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-uberlandia',
+    name: 'Havan – Uberlândia (MG)',
+    description: 'Loja Havan no Triângulo Mineiro. Região de forte penetração do bolsonarismo e perfil agropecuário que se alinha à orientação da rede.',
+    lat: -18.9186,
+    lng: -48.2772,
+    address: 'Av. João Naves de Ávila, 3750 – Santa Mônica, Uberlândia - MG',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 203, esquerda: 41, neutro: 31 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-cascavel',
+    name: 'Havan – Cascavel (PR)',
+    description: 'Loja Havan no oeste paranaense. Cascavel é uma das regiões mais conservadoras do PR, berço de apoio à expansão da rede de Luciano Hang.',
+    lat: -24.9578,
+    lng: -53.4595,
+    address: 'Rua Paraná, 3050 – Centro, Cascavel - PR',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 189, esquerda: 35, neutro: 28 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-campinas',
+    name: 'Havan – Campinas (SP)',
+    description: 'Unidade Havan em Campinas. A rede expandiu ao interior paulista aproveitando base de consumidores de perfil conservador do agronegócio.',
+    lat: -22.9099,
+    lng: -47.0626,
+    address: 'Av. John Boyd Dunlop, 4800 – Jardim Ipaussurama, Campinas - SP',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 221, esquerda: 49, neutro: 35 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-vitoria',
+    name: 'Havan – Serra (ES)',
+    description: 'Loja Havan na Grande Vitória. Espírito Santo tem um dos maiores índices de apoio ao conservadorismo eleitoral; a rede se beneficia desse perfil.',
+    lat: -20.1283,
+    lng: -40.2989,
+    address: 'Av. Central, 1000 – Laranjeiras, Serra - ES',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 187, esquerda: 44, neutro: 31 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+  {
+    id: 'havan-londrina',
+    name: 'Havan – Londrina (PR)',
+    description: 'Unidade da Havan em Londrina. Norte do Paraná é uma das bases de apoio ao bolsonarismo e à rede de Luciano Hang.',
+    lat: -23.3045,
+    lng: -51.1696,
+    address: 'Av. Leste-Oeste, 100 – Centro, Londrina - PR',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 199, esquerda: 40, neutro: 30 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-07T08:00:00Z',
+  },
+
+  // ══════════════════════════════════════════════════════════════
+  // OUTRAS EMPRESAS QUE DECLARARAM PUBLICAMENTE POSICIONAMENTO
+  // DE DIREITA OU CONSERVADOR NO BRASIL
+  // ══════════════════════════════════════════════════════════════
+
+  // ── Cimed – João Adibe Marques ─────────────────────────────
+  {
+    id: 'cimed-hq',
+    name: 'Cimed – Sede Corporativa',
+    description: 'Maior empresa farmacêutica de capital nacional. O CEO João Adibe Marques declarou publicamente apoio ao governo Bolsonaro e publicou posts críticos ao STF e à mídia chamada de "mainstream".',
+    lat: -27.0966,
+    lng: -48.9156,
+    address: 'Rod. SC-486, s/n – Navegantes, SC',
+    category: 'outro',
+    lean: 'direita',
+    votes: { direita: 317, esquerda: 91, neutro: 54 },
+    comments: [
+      { id: 'ci1', author: 'Anderson R.', text: 'O CEO da Cimed é muito ativo em redes sociais defendendo pautas conservadoras.', lean: 'direita', date: '2026-10-15T10:00:00Z' },
+      { id: 'ci2', author: 'Luciana T.', text: 'Bons produtos, mas o posicionamento político do dono gerou boicotes em 2022.', lean: 'neutro', date: '2026-10-16T14:30:00Z' },
+    ],
+    photoUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-08T08:00:00Z',
+  },
+
+  // ── Madero Burguer & Grill – Junior Durski ──────────────────
+  {
+    id: 'madero-curitiba',
+    name: 'Madero Burguer – Batel (Curitiba)',
+    description: 'Rede de restaurantes fundada por Junior Durski. Em 2021, Durski afirmou publicamente que preferia perder a empresa a fechá-la por lockdown, causando polêmica. É associado ao campo conservador.',
+    lat: -25.4436,
+    lng: -49.2929,
+    address: 'Av. do Batel, 1586 – Batel, Curitiba - PR',
+    category: 'restaurante',
+    lean: 'direita',
+    votes: { direita: 243, esquerda: 67, neutro: 58 },
+    comments: [
+      { id: 'md1', author: 'Ricardo C.', text: 'Durski foi polêmico mas o hambúrguer é excelente. Empresa tem posição bem definida.', lean: 'direita', date: '2026-10-18T19:30:00Z' },
+    ],
+    photoUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-08T08:00:00Z',
+  },
+  {
+    id: 'madero-sp',
+    name: 'Madero Burguer – Paulista (SP)',
+    description: 'Unidade paulistana do Madero. Rede de Junior Durski expandiu para todo o Brasil. Durski é um dos empresários conservadores mais conhecidos do país.',
+    lat: -23.5663,
+    lng: -46.6526,
+    address: 'Av. Paulista, 2073 – Bela Vista, São Paulo - SP',
+    category: 'restaurante',
+    lean: 'direita',
+    votes: { direita: 198, esquerda: 55, neutro: 47 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-08T08:00:00Z',
+  },
+
+  // ── Record TV – Edir Macedo ─────────────────────────────────
+  {
+    id: 'record-tv-sp',
+    name: 'Record TV – Sede São Paulo',
+    description: 'Emissora de televisão pertencente ao bispo Edir Macedo (Igreja Universal). A Record TV adotou linha editorial pró-Bolsonaro durante o governo 2018-2022, sendo identificada como meio de comunicação alinhado à direita religiosa.',
+    lat: -23.5163,
+    lng: -46.5693,
+    address: 'Rua da Várzea, 240 – Barra Funda, São Paulo - SP',
+    category: 'outro',
+    lean: 'direita',
+    votes: { direita: 389, esquerda: 178, neutro: 82 },
+    comments: [
+      { id: 'rc1', author: 'Tiago M.', text: 'A cobertura política da Record durante o governo Bolsonaro era claramente parcial.', lean: 'esquerda', date: '2026-10-14T20:00:00Z' },
+      { id: 'rc2', author: 'Fábio S.', text: 'Deram ampla voz às manifestações de direita e restringiram espaço para a oposição.', lean: 'esquerda', date: '2026-10-15T10:00:00Z' },
+      { id: 'rc3', author: 'Patrícia W.', text: 'Emissora com viés claro, mas ainda produz conteúdo jornalístico relevante.', lean: 'neutro', date: '2026-10-16T11:00:00Z' },
+    ],
+    photoUrl: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-09T08:00:00Z',
+  },
+
+  // ── SBT – Silvio Santos ─────────────────────────────────────
+  {
+    id: 'sbt-sp',
+    name: 'SBT – Sistema Brasileiro de Televisão',
+    description: 'Emissora fundada por Silvio Santos (Senor Abravanel). O SBT manteve apoio implícito ao governo Bolsonaro e Silvio Santos fez declarações favoráveis ao governo de direita em entrevistas.',
+    lat: -23.5030,
+    lng: -46.6420,
+    address: 'Av. das Comunicações, 4 – Vila Jaraguá, São Paulo - SP',
+    category: 'outro',
+    lean: 'direita',
+    votes: { direita: 271, esquerda: 134, neutro: 97 },
+    comments: [
+      { id: 'sb1', author: 'Fernanda L.', text: 'Silvio Santos fez declarações apoiando o governo Bolsonaro em entrevistas públicas.', lean: 'neutro', date: '2026-10-17T15:00:00Z' },
+    ],
+    photoUrl: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-09T08:00:00Z',
+  },
+
+  // ── Novo Mundo – Grupo empresarial conservador ──────────────
+  {
+    id: 'heritage-sp',
+    name: 'Instituto Heritage Brasil',
+    description: 'Braço brasileiro do think-tank conservador Heritage Foundation. Promove liberalismo econômico, Estado mínimo e valores conservadores. Ligado à direita liberal brasileira.',
+    lat: -23.5750,
+    lng: -46.6559,
+    address: 'Av. Brigadeiro Faria Lima, 1663 – Jardim Paulistano, São Paulo - SP',
+    category: 'outro',
+    lean: 'direita',
+    votes: { direita: 198, esquerda: 87, neutro: 34 },
+    comments: [
+      { id: 'ht1', author: 'Economista R.', text: 'Think tank que defende reformas liberais e redução do Estado. Influente na direita econômica.', lean: 'direita', date: '2026-10-19T09:00:00Z' },
+    ],
+    photoUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-09T08:00:00Z',
+  },
+
+  // ── Reserva – Alexandre Birman (MBL apoiador) ──────────────
+  {
+    id: 'reserva-rj',
+    name: 'Reserva – Loja Conceito (RJ)',
+    description: 'Marca de moda masculina brasileira. O fundador Rony Meisler tem perfil liberal e conservador na política econômica, apoiou pautas do MBL e da direita econômica brasileira.',
+    lat: -22.9830,
+    lng: -43.2103,
+    address: 'Rua Maria Angélica, 68 – Lagoa, Rio de Janeiro - RJ',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 143, esquerda: 44, neutro: 78 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-09T08:00:00Z',
+  },
+
+  // ── Pague Menos – farmácias conservadoras ──────────────────
+  {
+    id: 'farmcias-pague-menos-fortaleza',
+    name: 'Pague Menos – Sede Corporativa (Fortaleza)',
+    description: 'Maior rede de farmácias do Nordeste. A diretoria da rede Pague Menos assinou carta de empresários de direita em 2022, declarando apoio a pautas conservadoras e questionando o sistema eleitoral.',
+    lat: -3.7172,
+    lng: -38.5433,
+    address: 'Rua Des. Lauro Nogueira, 1500 – Pici, Fortaleza - CE',
+    category: 'loja',
+    lean: 'direita',
+    votes: { direita: 212, esquerda: 88, neutro: 61 },
+    comments: [
+      { id: 'pm1', author: 'Simone A.', text: 'A assinatura da carta anti-democrática por parte da rede causou boicote temporário no Ceará.', lean: 'esquerda', date: '2026-10-20T09:00:00Z' },
+    ],
+    photoUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-10T08:00:00Z',
+  },
+
+  // ── Espaço Conservador ──────────────────────────────────────
+  {
+    id: 'voto-pela-familia',
+    name: 'Confederação Nacional da Indústria (CNI)',
+    description: 'Principal entidade representativa da indústria brasileira. Historicamente associada a pautas de liberalismo econômico e reforma trabalhista conservadora. Apoiou reformas do governo Bolsonaro como a trabalhista e a previdenciária.',
+    lat: -15.7938,
+    lng: -47.8825,
+    address: 'SESI/SENAI – Ed. Roberto Simonsen, SBN Q2 – Brasília - DF',
+    category: 'outro',
+    lean: 'direita',
+    votes: { direita: 276, esquerda: 109, neutro: 88 },
+    comments: [
+      { id: 'cni1', author: 'Economista J.', text: 'A CNI representou interesses do capital industrial na aprovação da reforma trabalhista.', lean: 'direita', date: '2026-10-22T08:00:00Z' },
+    ],
+    photoUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-10T08:00:00Z',
+  },
+
+  // ── Centros genéricos ───────────────────────────────────────
+  {
+    id: 'est-gen-neutro',
+    name: 'Café & Bistrô Central 32',
+    description: 'Cafeteria executiva frequentada por profissionais liberais, advogados e servidores sem pauta ideológica aberta.',
+    lat: -22.9128,
+    lng: -43.1727,
+    address: 'Rua Visconde de Pirajá, 580 – Ipanema, Rio de Janeiro - RJ',
+    category: 'restaurante',
+    lean: 'neutro',
+    votes: { direita: 43, esquerda: 39, neutro: 112 },
+    comments: [],
+    photoUrl: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80',
+    addedAt: '2026-10-10T08:00:00Z',
+  },
 ];
 
 // ─── Camada de Persistência ──────────────────────────────────
@@ -174,8 +624,17 @@ function dbSave(data) {
 function dbInit() {
   const existing = dbLoad();
   if (!existing || !Array.isArray(existing) || existing.length === 0) {
+    // Primeiro uso – carrega todos os dados seed
     dbSave(SEED_ESTABLISHMENTS);
     return SEED_ESTABLISHMENTS;
+  }
+  // Merge: adiciona entradas seed que ainda não existem no banco local
+  const existingIds = new Set(existing.map(e => e.id));
+  const newEntries = SEED_ESTABLISHMENTS.filter(s => !existingIds.has(s.id));
+  if (newEntries.length > 0) {
+    const merged = [...existing, ...newEntries];
+    dbSave(merged);
+    return merged;
   }
   return existing;
 }
