@@ -3,7 +3,7 @@
 // v5 – Força Atualização: Categorias + Lojas Havan + Cache Buster
 // ============================================================
 
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const CACHE_NAME = `politimap-pwa-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [

@@ -742,10 +742,109 @@ function dbGetById(id) {
   return dbGetAll().find(e => e.id === id) || null;
 }
 
+// ============================================================
+// FIREBASE FIRESTORE – BANCO DE DADOS EM NUVEM EM TEMPO REAL
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyAVHeX2yxkO9z1PFjkUafVexE8WTdU3w20",
+  authDomain: "politimap-brasil.firebaseapp.com",
+  projectId: "politimap-brasil",
+  storageBucket: "politimap-brasil.firebasestorage.app",
+  messagingSenderId: "107209513221",
+  appId: "1:107209513221:web:7fef4704b8ad09a87fff6c",
+  measurementId: "G-CBZHK6YFH3"
+};
+
+let firestoreDb = null;
+let isFirestoreReady = false;
+
+function initFirebaseCloud() {
+  try {
+    if (typeof firebase !== 'undefined') {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      firestoreDb = firebase.firestore();
+      console.log('[Firebase] SDK inicializado.');
+      setupRealtimeSync();
+    }
+  } catch (err) {
+    console.warn('[Firebase] Executando em modo local:', err);
+  }
+}
+
+// Sincronização em tempo real com o Firestore
+function setupRealtimeSync() {
+  if (!firestoreDb) return;
+
+  const colRef = firestoreDb.collection('establishments');
+
+  colRef.onSnapshot(snapshot => {
+    if (snapshot.empty) {
+      console.log('[Firebase] Banco em nuvem vazio. Enviando estabelecimentos iniciais para a nuvem...');
+      seedFirestoreBatch(colRef);
+      return;
+    }
+
+    isFirestoreReady = true;
+    const cloudEsts = [];
+    snapshot.forEach(doc => {
+      cloudEsts.push(doc.data());
+    });
+
+    if (cloudEsts.length > 0) {
+      // Mescla com banco local para manter o app atualizado
+      const localMap = new Map(cloudEsts.map(e => [e.id, e]));
+      dbSave(Array.from(localMap.values()));
+
+      // Atualiza marcadores no mapa e contadores ao vivo
+      if (typeof refreshMapMarkersFromCloud === 'function') {
+        refreshMapMarkersFromCloud();
+      }
+    }
+  }, err => {
+    console.warn('[Firebase] Firestore aguardando ativação no Console:', err.message);
+  });
+}
+
+// Envia os estabelecimentos pré-configurados (Havan, etc.) para o Firestore
+async function seedFirestoreBatch(colRef) {
+  try {
+    const currentData = dbGetAll();
+    const batch = firestoreDb.batch();
+    currentData.forEach(est => {
+      const docRef = colRef.doc(String(est.id));
+      batch.set(docRef, est);
+    });
+    await batch.commit();
+    isFirestoreReady = true;
+    console.log('[Firebase] Carga inicial enviada com sucesso para a nuvem!');
+  } catch (e) {
+    console.warn('[Firebase] Não foi possível enviar carga inicial para Firestore:', e);
+  }
+}
+
+// Salva novo estabelecimento na nuvem
+function cloudAddEstablishment(est) {
+  if (!firestoreDb) return;
+  firestoreDb.collection('establishments').doc(String(est.id)).set(est)
+    .then(() => console.log('[Firebase] Estabelecimento salvo na nuvem:', est.name))
+    .catch(err => console.warn('[Firebase] Erro ao salvar estabelecimento na nuvem:', err));
+}
+
+// Atualiza estabelecimento na nuvem (votos ou comentários)
+function cloudUpdateEstablishment(updated) {
+  if (!firestoreDb) return;
+  firestoreDb.collection('establishments').doc(String(updated.id)).set(updated, { merge: true })
+    .then(() => console.log('[Firebase] Atualização sincronizada na nuvem:', updated.id))
+    .catch(err => console.warn('[Firebase] Erro ao sincronizar na nuvem:', err));
+}
+
 function dbAdd(establishment) {
   const data = dbGetAll();
   data.unshift(establishment);
   dbSave(data);
+  cloudAddEstablishment(establishment);
 }
 
 function dbUpdate(updated) {
@@ -755,6 +854,7 @@ function dbUpdate(updated) {
     data[idx] = updated;
     dbSave(data);
   }
+  cloudUpdateEstablishment(updated);
 }
 
 // ─── Controle de Votos por Usuário ───────────────────────────

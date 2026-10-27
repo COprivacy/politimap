@@ -62,6 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshGlobalStatistics();
   renderMarkersOnMap();
 
+  // Inicializa sincronização em nuvem Firebase Firestore
+  if (typeof initFirebaseCloud === 'function') {
+    initFirebaseCloud();
+  }
+
   // Redimensionamento inteligente para mobile e desktop
   window.addEventListener('resize', () => {
     if (mainMap) mainMap.invalidateSize();
@@ -458,6 +463,20 @@ function refreshMarkerOnMap(est) {
   addEstablishmentMarker(est);
 }
 
+// Atualização em tempo real acionada por eventos do Firebase Cloud
+function refreshMapMarkersFromCloud() {
+  if (!mainMap) return;
+  renderMarkersOnMap();
+  refreshGlobalStatistics();
+  if (selectedEstablishmentId) {
+    const est = dbGetById(selectedEstablishmentId);
+    if (est) {
+      updatePollUI(est);
+      renderCommentsList(est);
+    }
+  }
+}
+
 // ─── COMENTÁRIOS E AVALIAÇÕES ───────────────────────────────
 function renderCommentsList(est) {
   const container = document.getElementById('comments-container');
@@ -818,7 +837,7 @@ let deferredInstallPrompt = null;
 const PWA_DISMISSED_KEY = 'politimap_pwa_dismissed_until';
 
 // 1. Registro do Service Worker + Forçamento de Atualização Imediata
-const APP_VERSION = 'v6';
+const APP_VERSION = 'v7';
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
