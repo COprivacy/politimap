@@ -1,11 +1,9 @@
 // ============================================================
 // PolitiMap – Service Worker Nativo PWA
-// v3 – Atualização: +18 lojas HAVAN + empresas de direita
+// v5 – Força Atualização: Categorias + Lojas Havan + Cache Buster
 // ============================================================
 
-// ⚠️ IMPORTANTE: Sempre que atualizar arquivos locais, incremente
-// CACHE_VERSION para forçar atualização em todos os clientes PWA.
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `politimap-pwa-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
@@ -19,19 +17,32 @@ const STATIC_ASSETS = [
   './icons/icon-512.png'
 ];
 
-// ─── INSTALAÇÃO: Baixa todos os assets da nova versão ────────
+// ─── INSTALAÇÃO: Baixa os assets na rede SEM usar cache HTTP ──
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(STATIC_ASSETS))
-      .then(() => {
-        // Força ativação imediata — não espera fechar abas antigas
-        return self.skipWaiting();
-      })
+    caches.open(CACHE_NAME).then(async cache => {
+      // Força download direto da rede (cache: 'reload') para evitar servir cache do browser
+      await Promise.all(
+        STATIC_ASSETS.map(async url => {
+          try {
+            const req = new Request(url, { cache: 'reload' });
+            const res = await fetch(req);
+            if (res && res.status === 200) {
+              await cache.put(url, res);
+            }
+          } catch (err) {
+            console.warn('[SW] Falha ao pré-cachear:', url, err);
+          }
+        })
+      );
+    }).then(() => {
+      // Força o novo SW a entrar imediatamente sem esperar fechar o app
+      return self.skipWaiting();
+    })
   );
 });
 
-// ─── ATIVAÇÃO: Remove caches de versões anteriores ───────────
+// ─── ATIVAÇÃO: Limpa TODOS os caches antigos imediatamente ─────
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -39,7 +50,7 @@ self.addEventListener('activate', event => {
         cacheNames
           .filter(name => name.startsWith('politimap-pwa-') && name !== CACHE_NAME)
           .map(name => {
-            console.log(`[SW] Removendo cache antigo: ${name}`);
+            console.log(`[SW] Removendo cache antigo obsoleto: ${name}`);
             return caches.delete(name);
           })
       );
@@ -47,13 +58,13 @@ self.addEventListener('activate', event => {
       console.log(`[SW] Ativo na versão ${CACHE_VERSION}`);
       return self.clients.claim();
     }).then(() => {
-      // Notifica todas as abas/PWAs abertas para recarregar
+      // Notifica abas/instâncias abertas para sincronizar
       return self.clients.matchAll({ type: 'window' }).then(clients => {
         clients.forEach(client => {
           client.postMessage({
             type: 'SW_UPDATED',
             version: CACHE_VERSION,
-            message: 'Nova versão disponível com +18 lojas HAVAN e empresas de direita.'
+            message: 'App atualizado para a versão mais recente com novas categorias e locais.'
           });
         });
       });
@@ -61,20 +72,20 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ─── MENSAGENS: Permite forçar atualização manual ────────────
+// ─── MENSAGENS: Permite forçar ativação imediata via app ──────
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
 
-// ─── FETCH: Network First com fallback para Cache ────────────
+// ─── FETCH: Rede primeiro com revalidação imediata ────────────
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // Recursos externos (tiles de mapa, CDN): rede direta sem cache SW
+  // Recursos externos (tiles de mapa, CDN, Google Fonts)
   if (url.origin !== location.origin) {
     event.respondWith(
       fetch(event.request).catch(() => caches.match(event.request))
@@ -82,7 +93,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Recursos locais: rede primeiro → atualiza cache → fallback para cache
+  // Recursos locais: busca na rede (com no-cache) para sempre pegar a versão atualizada
   event.respondWith(
     fetch(event.request)
       .then(response => {

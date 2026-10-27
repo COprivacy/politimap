@@ -817,47 +817,115 @@ function escapeHtml(text) {
 let deferredInstallPrompt = null;
 const PWA_DISMISSED_KEY = 'politimap_pwa_dismissed_until';
 
-// 1. Registro do Service Worker + Detecção de Atualização
+// 1. Registro do Service Worker + Forçamento de Atualização Imediata
+const APP_VERSION = 'v5';
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    // Registra forçando checagem sem cache HTTP do sw.js através de ?v=5 e updateViaCache: 'none'
     navigator.serviceWorker
-      .register('./sw.js')
+      .register('./sw.js?v=' + APP_VERSION, { updateViaCache: 'none' })
       .then(reg => {
-        console.log('PolitiMap SW registrado:', reg.scope);
+        console.log('[PWA] Service Worker registrado com sucesso:', reg.scope);
 
-        // Detecta novo SW sendo instalado em segundo plano
+        // Se já existe um worker esperando (waiting), ativa imediatamente
+        if (reg.waiting) {
+          console.log('[PWA] Worker em espera detectado, forçando ativação...');
+          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+
+        // Força checagem imediata de versão no servidor
+        reg.update().catch(() => {});
+
+        // Checagem periódica a cada 10 minutos
+        setInterval(() => {
+          reg.update().catch(() => {});
+        }, 10 * 60 * 1000);
+
+        // Detecta novo SW sendo baixado
         reg.addEventListener('updatefound', () => {
           const newWorker = reg.installing;
           if (!newWorker) return;
 
           newWorker.addEventListener('statechange', () => {
-            // Quando o novo SW terminou de instalar e está esperando
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // Envia sinal para o SW ativar imediatamente (skipWaiting)
-              newWorker.postMessage({ type: 'SKIP_WAITING' });
+            if (newWorker.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                // Já havia versão anterior ativa, ativa imediatamente o novo
+                console.log('[PWA] Nova versão instalada. Ativando skipWaiting...');
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+                showUpdateToast('Novas lojas e categorias atualizadas! Recarregando...');
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1200);
+              }
             }
           });
         });
       })
       .catch(err => {
-        console.warn('Falha ao registrar Service Worker:', err);
+        console.warn('[PWA] Falha ao registrar Service Worker:', err);
       });
 
-    // Quando o SW ativo muda (novo SW tomou controle), recarrega
+    // Quando o usuário volta ao app no celular (minimizado / reaberto)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready.then(reg => {
+          reg.update().catch(() => {});
+        });
+      }
+    });
+
+    // Quando o novo SW assume o controle da página, recarrega suavemente
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (refreshing) return;
       refreshing = true;
+      console.log('[PWA] Novo Service Worker ativo. Recarregando página...');
       window.location.reload();
     });
 
-    // Recebe mensagem do SW sobre atualização disponível
+    // Recebe notificação direta do Service Worker
     navigator.serviceWorker.addEventListener('message', event => {
       if (event.data && event.data.type === 'SW_UPDATED') {
-        showUpdateToast(event.data.message || 'Nova versão disponível!');
+        showUpdateToast(event.data.message || 'Nova versão aplicada!');
       }
     });
   });
+}
+
+// ─── FORÇAR ATUALIZAÇÃO MANUAL (Limpa Caches + SW + Dados) ───
+async function forceAppUpdate() {
+  displayToast('Sincronizando com o servidor...');
+  try {
+    // 1. Desregistra todos os Service Workers antigos
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const r of regs) {
+        await r.unregister();
+      }
+    }
+
+    // 2. Apaga todos os caches de arquivos
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+
+    // 3. Atualiza banco local com todas as novas lojas e categorias
+    if (typeof dbInit === 'function') {
+      dbInit(true);
+    }
+
+    displayToast('Atualizado! Reiniciando aplicativo...');
+    setTimeout(() => {
+      // Recarrega ignorando cache via timestamp único
+      const cleanUrl = window.location.origin + window.location.pathname + '?refresh=' + Date.now();
+      window.location.href = cleanUrl;
+    }, 700);
+  } catch (e) {
+    console.error('Erro ao forçar atualização:', e);
+    window.location.reload();
+  }
 }
 
 // Toast especial de atualização com botão de recarregar

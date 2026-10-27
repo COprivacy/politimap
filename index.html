@@ -18,7 +18,10 @@
   <!-- Font Awesome 6 Icons (Sem Emojis) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
-  <!-- Progressive Web App (PWA) Tags -->
+  <!-- Progressive Web App (PWA) Tags & Cache-Control -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0F172A" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -27,7 +30,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
   <!-- Estilos Customizados -->
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=5" />
 </head>
 <body>
 
@@ -100,6 +103,9 @@
         <span class="install-pulse-dot"></span>
         <i class="fa-solid fa-arrow-down-to-line"></i>
         <span>Instalar App</span>
+      </button>
+      <button class="nav-btn-icon" id="btn-force-refresh" onclick="forceAppUpdate()" title="Sincronizar dados e atualizar aplicativo">
+        <i class="fa-solid fa-arrows-rotate"></i>
       </button>
       <button class="nav-btn-icon" id="btn-locate" onclick="triggerGeolocation()" title="Localizar meu dispositivo via GPS">
         <i class="fa-solid fa-location-crosshairs"></i>
@@ -206,6 +212,11 @@
 
         <!-- Indicadores Estatísticos Globais -->
         <div class="metrics-row" id="stats-summary-row"></div>
+
+        <!-- Botão de Sincronização / Atualização no Painel -->
+        <button class="btn-secondary" style="margin-top: 14px; width: 100%; font-size: 0.8rem; padding: 8px 14px;" onclick="forceAppUpdate()">
+          <i class="fa-solid fa-arrows-rotate"></i> Sincronizar / Buscar Atualizações
+        </button>
       </div>
 
       <!-- Detalhes do Estabelecimento Selecionado -->
@@ -454,7 +465,7 @@
   <div class="app-toast" id="app-toast"></div>
 
   <!-- SCRIPTS -->
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/data.js?v=5"></script>
+  <script src="js/app.js?v=5"></script>
 </body>
 </html>

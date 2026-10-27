@@ -691,26 +691,51 @@ function dbSave(data) {
   localStorage.setItem(DB_KEY, JSON.stringify(data));
 }
 
-function dbInit() {
+function dbInit(forceReset = false) {
   const existing = dbLoad();
-  if (!existing || !Array.isArray(existing) || existing.length === 0) {
-    // Primeiro uso – carrega todos os dados seed
+  if (forceReset || !existing || !Array.isArray(existing) || existing.length === 0) {
     dbSave(SEED_ESTABLISHMENTS);
     return SEED_ESTABLISHMENTS;
   }
-  // Merge: adiciona entradas seed que ainda não existem no banco local
-  const existingIds = new Set(existing.map(e => e.id));
-  const newEntries = SEED_ESTABLISHMENTS.filter(s => !existingIds.has(s.id));
-  if (newEntries.length > 0) {
-    const merged = [...existing, ...newEntries];
+
+  // Merge inteligente: preserva votos/comentários de estabelecimentos existentes,
+  // mas garante que novas lojas e novos campos (categoria, fotos, coordenadas) sejam atualizados!
+  const existingMap = new Map(existing.map(e => [e.id, e]));
+  let hasChanges = false;
+
+  SEED_ESTABLISHMENTS.forEach(seedItem => {
+    if (!existingMap.has(seedItem.id)) {
+      existingMap.set(seedItem.id, { ...seedItem });
+      hasChanges = true;
+    } else {
+      const current = existingMap.get(seedItem.id);
+      // Garante que a categoria esteja sempre preenchida
+      if (!current.category && seedItem.category) {
+        current.category = seedItem.category;
+        hasChanges = true;
+      }
+      // Se a categoria no seed for mais específica que a atual
+      if (seedItem.category && (!current.category || current.category === 'outro')) {
+        current.category = seedItem.category;
+        hasChanges = true;
+      }
+      // Atualiza foto se o atual não tiver
+      if (!current.photoUrl && seedItem.photoUrl) {
+        current.photoUrl = seedItem.photoUrl;
+        hasChanges = true;
+      }
+    }
+  });
+
+  const merged = Array.from(existingMap.values());
+  if (hasChanges) {
     dbSave(merged);
-    return merged;
   }
-  return existing;
+  return merged;
 }
 
 function dbGetAll() {
-  return dbLoad() || dbInit();
+  return dbInit();
 }
 
 function dbGetById(id) {
