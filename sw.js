@@ -5,7 +5,7 @@
 
 // ⚠️ IMPORTANTE: Sempre que atualizar arquivos locais, incremente
 // CACHE_VERSION para forçar atualização em todos os clientes PWA.
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = `politimap-pwa-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [

@@ -1382,6 +1382,67 @@ html, body {
   border-radius: var(--radius-full);
 }
 
+/* ─── BARRA DE FILTRO POR CATEGORIA ─── */
+.category-filter-bar {
+  position: fixed;
+  top: 62px; /* logo abaixo do header */
+  left: 0;
+  right: 0;
+  z-index: 900;
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: rgba(11, 17, 33, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.category-filter-bar::-webkit-scrollbar { display: none; }
+
+.cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+.cat-chip i {
+  font-size: 0.7rem;
+}
+.cat-chip:hover {
+  background: rgba(247, 201, 72, 0.12);
+  border-color: rgba(247, 201, 72, 0.4);
+  color: var(--direita-gold, #F7C948);
+}
+.cat-chip.active {
+  background: linear-gradient(135deg, rgba(247,201,72,0.2), rgba(230,184,0,0.15));
+  border-color: var(--direita-gold, #F7C948);
+  color: var(--direita-gold, #F7C948);
+  box-shadow: 0 0 10px rgba(247,201,72,0.15);
+}
+
+/* Empurra o conteúdo principal para baixo da barra de categorias */
+.app-container {
+  padding-top: calc(62px + 44px) !important; /* header + category bar */
+}
+
 /* ─── BOTTOM NAV MOBILE (TELAS MENORES) ─── */
 .bottom-nav-mobile {
   display: none;

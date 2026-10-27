@@ -110,6 +110,58 @@
     </div>
   </header>
 
+  <!-- ─── BARRA DE FILTRO POR CATEGORIA ─── -->
+  <div class="category-filter-bar" id="category-filter-bar">
+    <button class="cat-chip active" data-cat="all" onclick="applyCategoryFilter('all')">
+      <i class="fa-solid fa-border-all"></i><span>Todos</span>
+    </button>
+    <button class="cat-chip" data-cat="restaurante" onclick="applyCategoryFilter('restaurante')">
+      <i class="fa-solid fa-utensils"></i><span>Restaurante</span>
+    </button>
+    <button class="cat-chip" data-cat="loja" onclick="applyCategoryFilter('loja')">
+      <i class="fa-solid fa-store"></i><span>Comércio</span>
+    </button>
+    <button class="cat-chip" data-cat="supermercado" onclick="applyCategoryFilter('supermercado')">
+      <i class="fa-solid fa-cart-shopping"></i><span>Supermercado</span>
+    </button>
+    <button class="cat-chip" data-cat="barbearia" onclick="applyCategoryFilter('barbearia')">
+      <i class="fa-solid fa-scissors"></i><span>Barbearia</span>
+    </button>
+    <button class="cat-chip" data-cat="farmacia" onclick="applyCategoryFilter('farmacia')">
+      <i class="fa-solid fa-pills"></i><span>Farmácia</span>
+    </button>
+    <button class="cat-chip" data-cat="bar" onclick="applyCategoryFilter('bar')">
+      <i class="fa-solid fa-beer-mug-empty"></i><span>Bar</span>
+    </button>
+    <button class="cat-chip" data-cat="academia" onclick="applyCategoryFilter('academia')">
+      <i class="fa-solid fa-dumbbell"></i><span>Academia</span>
+    </button>
+    <button class="cat-chip" data-cat="banco" onclick="applyCategoryFilter('banco')">
+      <i class="fa-solid fa-landmark"></i><span>Banco</span>
+    </button>
+    <button class="cat-chip" data-cat="posto" onclick="applyCategoryFilter('posto')">
+      <i class="fa-solid fa-gas-pump"></i><span>Posto</span>
+    </button>
+    <button class="cat-chip" data-cat="clinica" onclick="applyCategoryFilter('clinica')">
+      <i class="fa-solid fa-stethoscope"></i><span>Clínica</span>
+    </button>
+    <button class="cat-chip" data-cat="hotel" onclick="applyCategoryFilter('hotel')">
+      <i class="fa-solid fa-hotel"></i><span>Hotel</span>
+    </button>
+    <button class="cat-chip" data-cat="escola" onclick="applyCategoryFilter('escola')">
+      <i class="fa-solid fa-graduation-cap"></i><span>Educação</span>
+    </button>
+    <button class="cat-chip" data-cat="igreja" onclick="applyCategoryFilter('igreja')">
+      <i class="fa-solid fa-church"></i><span>Religioso</span>
+    </button>
+    <button class="cat-chip" data-cat="sindicato" onclick="applyCategoryFilter('sindicato')">
+      <i class="fa-solid fa-bullhorn"></i><span>Sindical</span>
+    </button>
+    <button class="cat-chip" data-cat="outro" onclick="applyCategoryFilter('outro')">
+      <i class="fa-solid fa-location-dot"></i><span>Outros</span>
+    </button>
+  </div>
+
   <!-- ─── ÁREA DE TRABALHO PRINCIPAL ─── -->
   <main class="app-container">
     
@@ -301,14 +353,21 @@
           <div class="form-field-group">
             <label class="form-label" for="form-category">Categoria *</label>
             <select id="form-category" class="select-field">
-              <option value="bar">Bar & Choperia</option>
               <option value="restaurante">Restaurante</option>
-              <option value="livraria">Livraria & Café</option>
               <option value="loja">Comércio & Varejo</option>
+              <option value="supermercado">Supermercado & Mercado</option>
+              <option value="barbearia">Barbearia & Salão</option>
+              <option value="farmacia">Farmácia & Saúde</option>
+              <option value="bar">Bar & Choperia</option>
               <option value="academia">Academia & Fitness</option>
-              <option value="sindicato">Sede Sindical & Coletivo</option>
+              <option value="banco">Banco & Financeiro</option>
+              <option value="posto">Posto de Combustível</option>
+              <option value="clinica">Clínica & Consultório</option>
+              <option value="hotel">Hotel & Hospedagem</option>
               <option value="escola">Educação & Cursos</option>
+              <option value="livraria">Livraria & Café</option>
               <option value="igreja">Templo & Religioso</option>
+              <option value="sindicato">Sede Sindical & Coletivo</option>
               <option value="outro">Estabelecimento Geral</option>
             </select>
           </div>

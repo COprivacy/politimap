@@ -287,13 +287,35 @@ function applyFilter(filter) {
     }
   });
 
+  applyAllFilters();
+}
+
+// ─── FILTRO POR CATEGORIA ────────────────────────────────────
+let currentCategoryFilter = 'all';
+
+function applyCategoryFilter(cat) {
+  currentCategoryFilter = cat;
+
+  // Atualiza estilo dos chips de categoria
+  document.querySelectorAll('.cat-chip').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
+
+  applyAllFilters();
+}
+
+// Aplica cruzamento: filtro político + filtro de categoria
+function applyAllFilters() {
   const establishments = dbGetAll();
   establishments.forEach(est => {
     const winningLean = getWinningLean(est.votes);
     const marker = markersMap[est.id];
     if (!marker) return;
 
-    if (filter === 'all' || winningLean === filter) {
+    const passesLean = currentActiveFilter === 'all' || winningLean === currentActiveFilter;
+    const passesCat  = currentCategoryFilter === 'all' || est.category === currentCategoryFilter;
+
+    if (passesLean && passesCat) {
       if (!mainMap.hasLayer(marker)) mainMap.addLayer(marker);
     } else {
       if (mainMap.hasLayer(marker)) mainMap.removeLayer(marker);

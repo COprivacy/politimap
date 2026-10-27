@@ -53,6 +53,76 @@ const CATEGORY_CONFIG = {
     iconClass: 'fa-solid fa-location-dot',
     defaultPhoto: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
   },
+  supermercado: {
+    label: 'Supermercado & Mercado',
+    iconClass: 'fa-solid fa-cart-shopping',
+    defaultPhoto: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80',
+  },
+  barbearia: {
+    label: 'Barbearia & Salao',
+    iconClass: 'fa-solid fa-scissors',
+    defaultPhoto: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
+  },
+  farmacia: {
+    label: 'Farmacia & Saude',
+    iconClass: 'fa-solid fa-pills',
+    defaultPhoto: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=800&q=80',
+  },
+  banco: {
+    label: 'Banco & Financeiro',
+    iconClass: 'fa-solid fa-landmark',
+    defaultPhoto: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80',
+  },
+  posto: {
+    label: 'Posto de Combustivel',
+    iconClass: 'fa-solid fa-gas-pump',
+    defaultPhoto: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80',
+  },
+  hotel: {
+    label: 'Hotel & Hospedagem',
+    iconClass: 'fa-solid fa-hotel',
+    defaultPhoto: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+  },
+  clinica: {
+    label: 'Clinica & Consultorio',
+    iconClass: 'fa-solid fa-stethoscope',
+    defaultPhoto: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80',
+  },
+  supermercado: {
+    label: 'Supermercado & Mercado',
+    iconClass: 'fa-solid fa-cart-shopping',
+    defaultPhoto: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80',
+  },
+  barbearia: {
+    label: 'Barbearia & Salao',
+    iconClass: 'fa-solid fa-scissors',
+    defaultPhoto: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
+  },
+  farmacia: {
+    label: 'Farmacia & Saude',
+    iconClass: 'fa-solid fa-pills',
+    defaultPhoto: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=800&q=80',
+  },
+  banco: {
+    label: 'Banco & Financeiro',
+    iconClass: 'fa-solid fa-landmark',
+    defaultPhoto: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&q=80',
+  },
+  posto: {
+    label: 'Posto de Combustivel',
+    iconClass: 'fa-solid fa-gas-pump',
+    defaultPhoto: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80',
+  },
+  hotel: {
+    label: 'Hotel & Hospedagem',
+    iconClass: 'fa-solid fa-hotel',
+    defaultPhoto: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+  },
+  clinica: {
+    label: 'Clinica & Consultorio',
+    iconClass: 'fa-solid fa-stethoscope',
+    defaultPhoto: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&q=80',
+  },
 };
 
 // ─── Dados Iniciais Reais ─────────────────────────────────────
