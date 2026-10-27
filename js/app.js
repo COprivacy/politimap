@@ -15,7 +15,7 @@ let currentTileIndex = 0;
 let currentTileLayer = null;
 let currentReferenceLayer = null;
 
-// Configuração de Camadas Esri ArcGIS Livres (Sem Chave de API, Sem Bloqueio 403)
+// Configuração de Camadas Esri ArcGIS Livres (Sem Chave de API, Sem Bloqueio 403 e Sem Limite de Zoom)
 const MAP_TILE_CONFIGS = [
   {
     name: 'dark',
@@ -23,7 +23,8 @@ const MAP_TILE_CONFIGS = [
     base: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
     reference: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
     options: {
-      maxZoom: 18,
+      maxNativeZoom: 16,
+      maxZoom: 19,
       attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
     },
   },
@@ -33,6 +34,7 @@ const MAP_TILE_CONFIGS = [
     base: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
     reference: null,
     options: {
+      maxNativeZoom: 18,
       maxZoom: 19,
       attribution: 'Tiles &copy; Esri &mdash; Fontes Cartográficas Mundiais',
     },
@@ -43,7 +45,8 @@ const MAP_TILE_CONFIGS = [
     base: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     reference: null,
     options: {
-      maxZoom: 18,
+      maxNativeZoom: 18,
+      maxZoom: 19,
       attribution: 'Tiles &copy; Esri &mdash; Imagens Satélite Gratuitas',
     },
   },
@@ -116,7 +119,8 @@ function applyTileLayer(index) {
   // Adicionar camada de nomes e ruas de referência se houver
   if (config.reference) {
     currentReferenceLayer = L.tileLayer(config.reference, {
-      maxZoom: config.options.maxZoom,
+      maxNativeZoom: config.options.maxNativeZoom || 16,
+      maxZoom: config.options.maxZoom || 19,
       zIndex: 400,
     }).addTo(mainMap);
   }
