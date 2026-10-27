@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>PolitiMap – Análise Política Georreferenciada</title>
+  <meta name="description" content="Plataforma de mapeamento e análise do espectro político de estabelecimentos e espaços públicos." />
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet CSS & JS (100% Livre e Gratuito, Sem API Key) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Font Awesome 6 Icons (Sem Emojis) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Estilos Customizados -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ─── TELA DE ENTRADA / APRESENTAÇÃO ─── -->
+  <div id="splash-overlay" class="splash">
+    <div class="splash-card">
+      <div class="splash-brand">
+        <div class="splash-brand-icon">
+          <i class="fa-solid fa-map-location-dot"></i>
+        </div>
+        <h1>Politi<span>Map</span></h1>
+      </div>
+      <p class="splash-desc">
+        Mapeamento cívico colaborativo. Consulte o espectro político de locais ao seu redor, participe das enquetes e contribua com avaliações verificadas.
+      </p>
+
+      <div class="splash-spectrum-preview">
+        <div class="spectrum-node esquerda">
+          <i class="fa-solid fa-chevron-left"></i> Esquerda
+        </div>
+        <div class="spectrum-line"></div>
+        <div class="spectrum-node direita">
+          Direita <i class="fa-solid fa-chevron-right"></i>
+        </div>
+      </div>
+
+      <button id="btn-enter-app" class="btn-primary" onclick="dismissSplash()">
+        <i class="fa-solid fa-compass"></i> Iniciar Navegação
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── HEADER / NAVBAR PRINCIPAL ─── -->
+  <header class="top-nav">
+    <div class="nav-brand" onclick="resetView()">
+      <div class="nav-brand-icon">
+        <i class="fa-solid fa-landmark"></i>
+      </div>
+      <div class="nav-brand-title">Politi<span>Map</span></div>
+    </div>
+
+    <!-- Barra de Busca Rápida de Endereço / Bairro -->
+    <div class="nav-search-bar">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="text" id="search-input" placeholder="Buscar bairro, rua ou cidade..." onkeydown="handleAddressSearch(event)" />
+      <button class="search-btn" type="button" onclick="handleAddressSearch()">
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <!-- Filtros Desktop -->
+    <div class="nav-filters-desktop">
+      <button class="filter-chip active" data-filter="all" onclick="applyFilter('all')">
+        <i class="fa-solid fa-border-all"></i> Todos
+      </button>
+      <button class="filter-chip" data-filter="direita" onclick="applyFilter('direita')">
+        <i class="fa-solid fa-arrow-trend-up"></i> Direita
+      </button>
+      <button class="filter-chip" data-filter="esquerda" onclick="applyFilter('esquerda')">
+        <i class="fa-solid fa-arrow-trend-down"></i> Esquerda
+      </button>
+      <button class="filter-chip" data-filter="neutro" onclick="applyFilter('neutro')">
+        <i class="fa-solid fa-scale-balanced"></i> Centro / Neutro
+      </button>
+    </div>
+
+    <!-- Ações Desktop / Mobile -->
+    <div class="nav-actions">
+      <button class="nav-btn-icon" id="btn-locate" onclick="triggerGeolocation()" title="Localizar meu dispositivo via GPS">
+        <i class="fa-solid fa-location-crosshairs"></i>
+      </button>
+      <button class="nav-btn-action" onclick="openCreateModal()">
+        <i class="fa-solid fa-plus"></i> Novo Cadastro
+      </button>
+    </div>
+  </header>
+
+  <!-- ─── ÁREA DE TRABALHO PRINCIPAL ─── -->
+  <main class="app-container">
+    
+    <!-- MAPA INTERATIVO -->
+    <div id="map-viewport"></div>
+
+    <!-- CONTROLES FLUTUANTES NO MAPA -->
+    <div class="map-floating-controls">
+      <button class="floating-btn" id="btn-toggle-tiles" onclick="toggleMapStyle()" title="Alternar visualização do mapa (Escuro / Satélite / Ruas)">
+        <i class="fa-solid fa-layer-group"></i>
+      </button>
+      <button class="floating-btn primary" onclick="triggerGeolocation()" title="Centralizar na minha localização GPS">
+        <i class="fa-solid fa-crosshairs"></i>
+      </button>
+    </div>
+
+    <!-- ─── PAINEL LATERAL (DRAWER NO MOBILE) ─── -->
+    <aside class="sidebar-panel" id="sidebar-panel">
+      <!-- Puxador tátil para dispositivos móveis -->
+      <div class="drawer-pull-handle" onclick="toggleMobileDrawer()">
+        <div class="drawer-pill-bar"></div>
+      </div>
+
+      <!-- Estado Vazio / Boas-vindas -->
+      <div class="panel-welcome" id="panel-welcome">
+        <div class="welcome-badge-icon">
+          <i class="fa-solid fa-map-pin"></i>
+        </div>
+        <h2>Explorar Estabelecimentos</h2>
+        <p>Selecione qualquer marcador no mapa para inspecionar fotos de fachada, participar da enquete de orientação política e ler comentários da comunidade.</p>
+
+        <!-- Indicadores Estatísticos Globais -->
+        <div class="metrics-row" id="stats-summary-row"></div>
+      </div>
+
+      <!-- Detalhes do Estabelecimento Selecionado -->
+      <div class="panel-content" id="panel-details">
+        
+        <div class="detail-top-bar">
+          <button class="btn-back-link" onclick="closeEstablishmentDetail()">
+            <i class="fa-solid fa-arrow-left"></i> Voltar à visão geral
+          </button>
+          <span class="detail-status-pill" id="detail-pill"></span>
+        </div>
+
+        <!-- Fachada do Estabelecimento & GPS Street View -->
+        <div class="facade-container" id="facade-box">
+          <img id="detail-facade-img" class="facade-img" src="" alt="Fachada do local" />
+          <div class="facade-overlay">
+            <span class="facade-badge" id="facade-category-badge">
+              <i class="fa-solid fa-camera"></i> Fachada do Local
+            </span>
+            <a id="btn-street-link" class="btn-street-gps" href="#" target="_blank" rel="noopener noreferrer">
+              <i class="fa-solid fa-street-view"></i> Abrir no Street View
+            </a>
+          </div>
+        </div>
+
+        <!-- Identificação do Local -->
+        <div class="establishment-info">
+          <h2 class="establishment-title" id="detail-name"></h2>
+          <div class="establishment-meta">
+            <span class="meta-item" id="detail-category">
+              <i class="fa-solid fa-tag"></i> Categoria
+            </span>
+            <span class="meta-item" id="detail-address">
+              <i class="fa-solid fa-location-dot"></i> Endereço
+            </span>
+          </div>
+          <p class="establishment-description" id="detail-desc"></p>
+        </div>
+
+        <!-- Enquete Política Interativa -->
+        <div class="poll-card">
+          <div class="poll-header">
+            <div class="poll-title">
+              <i class="fa-solid fa-chart-simple"></i> Enquete de Espectro
+            </div>
+            <div class="poll-total-votes" id="detail-vote-count">0 votos apurados</div>
+          </div>
+
+          <div class="spectrum-meter">
+            <div class="meter-segment-d" id="meter-direita" style="width: 50%;"></div>
+            <div class="meter-segment-e" id="meter-esquerda" style="width: 50%;"></div>
+          </div>
+
+          <div class="spectrum-stats-legend">
+            <span class="legend-d" id="pct-d-text">Direita: 0%</span>
+            <span class="legend-e" id="pct-e-text">Esquerda: 0%</span>
+          </div>
+
+          <div class="vote-buttons-grid">
+            <button class="vote-action-btn direita" id="btn-vote-direita" onclick="handleVote('direita')">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+              <span>Direita</span>
+            </button>
+            <button class="vote-action-btn neutro" id="btn-vote-neutro" onclick="handleVote('neutro')">
+              <i class="fa-solid fa-scale-balanced"></i>
+              <span>Centro</span>
+            </button>
+            <button class="vote-action-btn esquerda" id="btn-vote-esquerda" onclick="handleVote('esquerda')">
+              <i class="fa-solid fa-arrow-trend-down"></i>
+              <span>Esquerda</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Feed de Comentários & Avaliações -->
+        <div class="comments-wrap">
+          <div class="comments-header">
+            <i class="fa-solid fa-comments"></i> Avaliações da Comunidade
+          </div>
+
+          <div class="comment-form">
+            <input type="text" id="input-comment-author" class="input-field" placeholder="Seu nome ou cargo (opcional)" />
+            <textarea id="input-comment-body" class="textarea-field" placeholder="Compartilhe informações relevantes sobre a postura ou perfil do local..."></textarea>
+            
+            <div class="form-row-actions">
+              <select id="select-comment-lean" class="select-field">
+                <option value="neutro">Avaliação: Centro / Neutro</option>
+                <option value="direita">Avaliação: Perfil de Direita</option>
+                <option value="esquerda">Avaliação: Perfil de Esquerda</option>
+              </select>
+              <button class="btn-submit-comment" onclick="handleCommentSubmit()">
+                <i class="fa-solid fa-paper-plane"></i> Publicar
+              </button>
+            </div>
+          </div>
+
+          <div class="comments-feed" id="comments-container"></div>
+        </div>
+
+      </div>
+    </aside>
+  </main>
+
+  <!-- ─── BARRA DE NAVEGAÇÃO MOBILE INFERIOR ─── -->
+  <nav class="bottom-nav-mobile">
+    <button class="mobile-nav-btn active" data-filter="all" onclick="applyFilter('all')">
+      <i class="fa-solid fa-border-all"></i>
+      <span>Todos</span>
+    </button>
+    <button class="mobile-nav-btn" data-filter="direita" onclick="applyFilter('direita')">
+      <i class="fa-solid fa-arrow-trend-up"></i>
+      <span>Direita</span>
+    </button>
+    <button class="mobile-nav-btn" data-filter="esquerda" onclick="applyFilter('esquerda')">
+      <i class="fa-solid fa-arrow-trend-down"></i>
+      <span>Esquerda</span>
+    </button>
+    <button class="mobile-nav-btn" data-filter="neutro" onclick="applyFilter('neutro')">
+      <i class="fa-solid fa-scale-balanced"></i>
+      <span>Centro</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="openCreateModal()">
+      <i class="fa-solid fa-circle-plus"></i>
+      <span>Novo</span>
+    </button>
+  </nav>
+
+  <!-- ─── MODAL DE CADASTRO DE ESTABELECIMENTO ─── -->
+  <div class="modal-backdrop" id="create-modal-backdrop" onclick="closeCreateModalOnBackdrop(event)">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-building-circle-check"></i> Cadastrar Estabelecimento</h3>
+        <button class="btn-close-modal" onclick="closeCreateModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-field-group">
+          <label class="form-label" for="form-name">Nome do Local / Razão Social *</label>
+          <input type="text" id="form-name" class="input-field" placeholder="Ex: Livraria Central, Café Paulista..." required />
+        </div>
+
+        <div class="form-grid-two">
+          <div class="form-field-group">
+            <label class="form-label" for="form-category">Categoria *</label>
+            <select id="form-category" class="select-field">
+              <option value="bar">Bar & Choperia</option>
+              <option value="restaurante">Restaurante</option>
+              <option value="livraria">Livraria & Café</option>
+              <option value="loja">Comércio & Varejo</option>
+              <option value="academia">Academia & Fitness</option>
+              <option value="sindicato">Sede Sindical & Coletivo</option>
+              <option value="escola">Educação & Cursos</option>
+              <option value="igreja">Templo & Religioso</option>
+              <option value="outro">Estabelecimento Geral</option>
+            </select>
+          </div>
+
+          <div class="form-field-group">
+            <label class="form-label" for="form-lean">Alinhamento Inicial *</label>
+            <select id="form-lean" class="select-field">
+              <option value="direita">Direita</option>
+              <option value="esquerda">Esquerda</option>
+              <option value="neutro">Centro / Neutro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-field-group">
+          <label class="form-label" for="form-address">Endereço Completo</label>
+          <input type="text" id="form-address" class="input-field" placeholder="Ex: Av. Paulista, 1000 - Bela Vista, São Paulo" />
+        </div>
+
+        <div class="form-field-group">
+          <label class="form-label" for="form-desc">Breve Descrição / Justificativa</label>
+          <textarea id="form-desc" class="textarea-field" placeholder="Informações de contexto sobre o estabelecimento..."></textarea>
+        </div>
+
+        <div class="form-field-group">
+          <label class="form-label" for="form-photo">URL da Foto da Fachada (Opcional)</label>
+          <input type="url" id="form-photo" class="input-field" placeholder="https://exemplo.com/foto-fachada.jpg (Vazio usará foto padrão)" />
+        </div>
+
+        <div class="form-field-group">
+          <label class="form-label">Coordenadas GPS no Mapa *</label>
+          <div class="coord-display-row">
+            <input type="number" id="form-lat" class="input-field" placeholder="Latitude" step="any" readonly />
+            <input type="number" id="form-lng" class="input-field" placeholder="Longitude" step="any" readonly />
+            <button class="btn-secondary" type="button" onclick="detectUserLocationForForm()">
+              <i class="fa-solid fa-location-crosshairs"></i> GPS Atual
+            </button>
+          </div>
+          <div id="picker-mini-map"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeCreateModal()">Cancelar</button>
+        <button class="btn-primary" style="width: auto;" onclick="handleEstablishmentSubmit()">
+          <i class="fa-solid fa-check"></i> Concluir Cadastro
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICAÇÃO TOAST FLUTUANTE -->
+  <div class="app-toast" id="app-toast"></div>
+
+  <!-- SCRIPTS -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
